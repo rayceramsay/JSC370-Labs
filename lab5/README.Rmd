@@ -143,6 +143,7 @@ met = merge(
   by.x="USAFID",
   by.y="USAF"
 )
+head(met)
 ```
 
 ```{r, eval=FALSE}
@@ -202,6 +203,14 @@ median_atm.press_station = station_med[atm.press_dist == 0]
 median_atm.press_station
 ```
 
+```{r}
+# Do they coincide? - Answer: no
+merged = median_temp_station |>
+  inner_join(median_wind.sp_station, by = "USAFID") |>
+  inner_join(median_atm.press_station, by = "USAFID")
+
+merged
+```
 
 Knit the document, commit your changes, and save it on GitHub. Don't forget to add `README.md` to the tree, the first time you render it.
 
@@ -227,6 +236,8 @@ id_station = merge(
   by.x = "USAFID", by.y = "USAF",
   all.x = TRUE, all.y = FALSE
 )
+
+id_station
 ```
 
 Knit the doc and save it on GitHub.
@@ -286,15 +297,21 @@ met[, elev_cat := fifelse(
 
 summary_table = met |> 
   group_by(STATE, elev_cat) |>
-  summarize(temp_mean = mean(temp, na.rm = T)) |>
+  summarize(
+    temp_mean = mean(temp, na.rm = T)
+    ) |>
   pivot_wider(names_from = elev_cat, values_from = temp_mean)
 
-# summary_table = summary_table |>
-#   mutate(avg_temp_level = case_when(
-#     temp_mean < 20 ~ "low",
-#     temp_mean >= 20 & temp_mean < 25 ~ "mid",
-#     temp_mean > 25 ~ "high"
-#   ))
+#summary_table = summary_table |>
+#  mutate(high_avg_temp_level = case_when(
+#    "high-elev" < 20 ~ "low",
+#   "high-elev" >= 20 & "high-elev" < 25 ~ "mid",
+#    "high-elev" > 25 ~ "high"
+#  ), low_avg_temp_level = case_when(
+#    "low-elev" < 20 ~ "low",
+#    "low-elev" >= 20 & "low-elev" < 25 ~ "mid",
+#    "low-elev" > 25 ~ "high"
+#  ))
 
 summary_table
 ```
